@@ -198,6 +198,12 @@ export function getGhostTarget(ghost: Ghost, pacmanPos: Position, pacmanDir: Dir
   }
   
   if (ghost.mode === 'SCATTER') {
+    if (Math.random() < 0.15) {
+      return {
+        x: Math.floor(Math.random() * MAZE_WIDTH),
+        y: Math.floor(Math.random() * MAZE_HEIGHT)
+      };
+    }
     return ghost.targetTile;
   }
   
@@ -235,8 +241,7 @@ export function getBestDirection(currentPos: Position, currentDir: Direction, ta
     'RIGHT': 'LEFT'
   };
   
-  let bestDir: Direction = currentDir || 'UP';
-  let minDistance = Infinity;
+  const validMoves: { dir: Direction; distance: number }[] = [];
   
   for (const dir of directions) {
     if (currentDir && dir === opposite[currentDir]) continue;
@@ -245,13 +250,27 @@ export function getBestDirection(currentPos: Position, currentDir: Direction, ta
     if (!canMove(nextPos.x, nextPos.y, isGhost)) continue;
     
     const distance = getDistance(nextPos, target);
-    if (distance < minDistance) {
-      minDistance = distance;
-      bestDir = dir;
-    }
+    validMoves.push({ dir, distance });
   }
   
-  return bestDir;
+  if (validMoves.length === 0) {
+    return currentDir || 'UP';
+  }
+  
+  validMoves.sort((a, b) => a.distance - b.distance);
+  
+  const randomChance = Math.random();
+  
+  if (randomChance < 0.12) {
+    const randomIndex = Math.floor(Math.random() * validMoves.length);
+    return validMoves[randomIndex].dir;
+  }
+  
+  if (randomChance < 0.30 && validMoves.length > 1) {
+    return validMoves[1].dir;
+  }
+  
+  return validMoves[0].dir;
 }
 
 export function checkCollision(pos1: Position, pos2: Position): boolean {
