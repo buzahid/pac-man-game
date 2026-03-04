@@ -178,6 +178,37 @@ function drawGhosts(ctx: CanvasRenderingContext2D, ghosts: GameState['ghosts'], 
     const py = ghost.position.y * CELL_SIZE + CELL_SIZE / 2;
     const radius = CELL_SIZE / 2 - 2;
     
+    if (ghost.mode === 'EATEN') {
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      
+      const eyeOffset = 3;
+      const eyeRadius = 4;
+      
+      let eyeX = 0;
+      let eyeY = 0;
+      switch (ghost.direction) {
+        case 'LEFT': eyeX = -2; break;
+        case 'RIGHT': eyeX = 2; break;
+        case 'UP': eyeY = -2; break;
+        case 'DOWN': eyeY = 2; break;
+      }
+      
+      ctx.beginPath();
+      ctx.arc(px - eyeOffset + eyeX, py - 2 + eyeY, eyeRadius, 0, Math.PI * 2);
+      ctx.arc(px + eyeOffset + eyeX, py - 2 + eyeY, eyeRadius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#0000ff';
+      const pupilRadius = 2;
+      ctx.beginPath();
+      ctx.arc(px - eyeOffset + eyeX, py - 2 + eyeY, pupilRadius, 0, Math.PI * 2);
+      ctx.arc(px + eyeOffset + eyeX, py - 2 + eyeY, pupilRadius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      return;
+    }
+    
     let color = ghost.color;
     if (ghost.mode === 'FRIGHTENED') {
       if (powerUpTimer < 2000 && Math.floor(time / 200) % 2 === 0) {

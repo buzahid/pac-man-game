@@ -17,6 +17,7 @@ import { Heart, Play, Pause, ArrowsClockwise } from '@phosphor-icons/react';
 import {
   GameState,
   Direction,
+  Ghost,
   initializeDots,
   initializePowerPellets,
   initializeGhosts,
@@ -262,10 +263,10 @@ function App() {
 
                 newState.ghosts = prev.ghosts.map((g) =>
                   g.id === ghost.id
-                    ? { ...g, position: { x: 13, y: 14 }, mode: 'CHASE' }
+                    ? { ...g, mode: 'EATEN' }
                     : g
                 );
-              } else {
+              } else if (ghost.mode !== 'EATEN') {
                 newState.lives = prev.lives - 1;
                 toast.error('Life Lost!');
 
@@ -293,17 +294,42 @@ function App() {
         lastGhostMoveTimeRef.current = now;
 
         setGameState((prev) => {
-          const newGhosts = prev.ghosts.map((ghost) => {
-            const target = getGhostTarget(ghost, prev.pacman.position, prev.pacman.direction);
-            const newDirection = getBestDirection(ghost.position, ghost.direction, target, true);
-            const nextPos = getNextPosition(ghost.position, newDirection);
+          const newGhosts = prev.ghosts.map((ghost): Ghost => {
+            if (ghost.mode === 'EATEN') {
+              const ghostHouse = { x: 13, y: 14 };
+              const distance = Math.abs(ghost.position.x - ghostHouse.x) + Math.abs(ghost.position.y - ghostHouse.y);
+              
+              if (distance < 1) {
+                return {
+                  ...ghost,
+                  position: ghostHouse,
+                  mode: 'SCATTER' as const,
+                };
+              }
+              
+              const target = ghostHouse;
+              const newDirection = getBestDirection(ghost.position, ghost.direction, target, true);
+              const nextPos = getNextPosition(ghost.position, newDirection);
 
-            if (canMove(nextPos.x, nextPos.y, true)) {
-              return {
-                ...ghost,
-                position: nextPos,
-                direction: newDirection,
-              };
+              if (canMove(nextPos.x, nextPos.y, true)) {
+                return {
+                  ...ghost,
+                  position: nextPos,
+                  direction: newDirection,
+                };
+              }
+            } else {
+              const target = getGhostTarget(ghost, prev.pacman.position, prev.pacman.direction);
+              const newDirection = getBestDirection(ghost.position, ghost.direction, target, true);
+              const nextPos = getNextPosition(ghost.position, newDirection);
+
+              if (canMove(nextPos.x, nextPos.y, true)) {
+                return {
+                  ...ghost,
+                  position: nextPos,
+                  direction: newDirection,
+                };
+              }
             }
 
             return ghost;
