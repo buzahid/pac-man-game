@@ -295,6 +295,36 @@ function App() {
 
         setGameState((prev) => {
           const newGhosts = prev.ghosts.map((ghost): Ghost => {
+            const updatedGhost = { ...ghost };
+
+            if (updatedGhost.inHouse) {
+              if (updatedGhost.exitTimer > 0) {
+                updatedGhost.exitTimer = Math.max(0, updatedGhost.exitTimer - GHOST_SPEED);
+                return updatedGhost;
+              }
+
+              const exitPoint = { x: 13, y: 11 };
+              const distance = Math.abs(updatedGhost.position.x - exitPoint.x) + Math.abs(updatedGhost.position.y - exitPoint.y);
+
+              if (distance < 1) {
+                updatedGhost.inHouse = false;
+                updatedGhost.position = exitPoint;
+                updatedGhost.direction = 'LEFT';
+                return updatedGhost;
+              }
+
+              const target = exitPoint;
+              const newDirection = getBestDirection(updatedGhost.position, updatedGhost.direction, target, true);
+              const nextPos = getNextPosition(updatedGhost.position, newDirection);
+
+              if (canMove(nextPos.x, nextPos.y, true)) {
+                updatedGhost.position = nextPos;
+                updatedGhost.direction = newDirection;
+              }
+
+              return updatedGhost;
+            }
+
             if (ghost.mode === 'EATEN') {
               const ghostHouse = { x: 13, y: 14 };
               const distance = Math.abs(ghost.position.x - ghostHouse.x) + Math.abs(ghost.position.y - ghostHouse.y);
@@ -304,6 +334,8 @@ function App() {
                   ...ghost,
                   position: ghostHouse,
                   mode: 'SCATTER' as const,
+                  inHouse: true,
+                  exitTimer: 1000,
                 };
               }
               

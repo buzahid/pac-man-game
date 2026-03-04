@@ -27,18 +27,18 @@ This is a single-screen game with core mechanics (movement, collision detection,
 - **Success criteria**: Dots disappear on contact, score updates immediately, level ends when all dots collected
 
 ### Ghost AI & Chase Mechanics
-- **Functionality**: Four ghosts patrol the maze with distinct movement patterns, chasing Pac-Man
+- **Functionality**: Four ghosts patrol the maze with distinct movement patterns, chasing Pac-Man. Ghosts start in the ghost house and exit sequentially with staggered timers.
 - **Purpose**: Creates challenge and tension in gameplay
 - **Trigger**: Game start or ghost respawn
-- **Progression**: Ghost AI calculates movement → Ghost moves toward target → Collision check with Pac-Man → Player loses life or ghost eaten if powered up
-- **Success criteria**: Ghosts move smoothly, exhibit different behaviors, and can catch Pac-Man
+- **Progression**: Ghost waits in house until exit timer expires → Ghost navigates to exit point → Ghost enters maze → AI calculates movement → Ghost moves toward target → Collision check with Pac-Man → Player loses life or ghost eaten if powered up
+- **Success criteria**: Ghosts exit the house sequentially, move smoothly, exhibit different behaviors, and can catch Pac-Man
 
 ### Power Pellets
-- **Functionality**: Special large dots that temporarily allow Pac-Man to eat ghosts
+- **Functionality**: Special large dots that temporarily allow Pac-Man to eat ghosts. When ghosts are eaten, they return to the ghost house and must exit again.
 - **Purpose**: Adds strategic depth and score multipliers
 - **Trigger**: Pac-Man collects power pellet
-- **Progression**: Pac-Man eats power pellet → Ghosts turn blue and flee → Timer starts → Pac-Man can eat ghosts for bonus points → Power-up expires → Ghosts return to chase mode
-- **Success criteria**: Ghosts change state visually, become vulnerable, award points when eaten, and return to normal after timeout
+- **Progression**: Pac-Man eats power pellet → Ghosts turn blue and flee → Timer starts → Pac-Man can eat ghosts for bonus points → Eaten ghosts return to house → Ghost waits briefly then exits → Power-up expires → Remaining ghosts return to chase mode
+- **Success criteria**: Ghosts change state visually, become vulnerable, award points when eaten, return to ghost house correctly, and return to normal after timeout
 
 ### Lives & Game Over
 - **Functionality**: Player starts with 3 lives, loses one when caught by ghost, game ends at 0 lives
@@ -49,6 +49,7 @@ This is a single-screen game with core mechanics (movement, collision detection,
 
 ## Edge Case Handling
 
+- **Ghost House Exit**: Ghosts exit sequentially with staggered timers (1s, 2s, 3s delays) to prevent overcrowding
 - **Multiple Ghost Collisions**: Only one life lost per collision event, brief invincibility period after respawn
 - **Power Pellet Timing**: Multiple power pellets extend duration rather than stack
 - **Rapid Direction Changes**: Input buffering for corner turns to feel responsive

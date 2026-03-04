@@ -17,6 +17,8 @@ export interface Ghost {
   color: string;
   mode: 'CHASE' | 'SCATTER' | 'FRIGHTENED' | 'EATEN';
   targetTile: Position;
+  inHouse: boolean;
+  exitTimer: number;
 }
 
 export interface GameState {
@@ -156,7 +158,9 @@ export function initializeGhosts(): Ghost[] {
       direction: 'LEFT',
       color: 'var(--ghost-red)',
       mode: 'SCATTER',
-      targetTile: { x: 25, y: 0 }
+      targetTile: { x: 25, y: 0 },
+      inHouse: false,
+      exitTimer: 0
     },
     {
       id: 'pinky',
@@ -164,7 +168,9 @@ export function initializeGhosts(): Ghost[] {
       direction: 'UP',
       color: 'var(--ghost-pink)',
       mode: 'SCATTER',
-      targetTile: { x: 2, y: 0 }
+      targetTile: { x: 2, y: 0 },
+      inHouse: true,
+      exitTimer: 1000
     },
     {
       id: 'inky',
@@ -172,7 +178,9 @@ export function initializeGhosts(): Ghost[] {
       direction: 'UP',
       color: 'var(--ghost-cyan)',
       mode: 'SCATTER',
-      targetTile: { x: 27, y: 29 }
+      targetTile: { x: 27, y: 29 },
+      inHouse: true,
+      exitTimer: 2000
     },
     {
       id: 'clyde',
@@ -180,7 +188,9 @@ export function initializeGhosts(): Ghost[] {
       direction: 'UP',
       color: 'var(--ghost-orange)',
       mode: 'SCATTER',
-      targetTile: { x: 0, y: 29 }
+      targetTile: { x: 0, y: 29 },
+      inHouse: true,
+      exitTimer: 3000
     }
   ];
 }
